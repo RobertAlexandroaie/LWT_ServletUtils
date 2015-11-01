@@ -3,33 +3,82 @@ package lwt.lab.utils;
 /** Some simple time savers. Static methods. */
 
 public class ResponseUtils {
-	
-	private static String HTML5Doctype() {
-		return "<!DOCTYPE html>\n";
+
+    private static String HTML5Doctype() {
+	return "<!DOCTYPE html>\n";
+    }
+
+    public static String titledHTML(String title) {
+	return titleBodyStyleHTML(title, null);
+    }
+
+    public static String cleanHTML() {
+	return titleBodyStyleHTML(null, null);
+    }
+
+    public static String titleBodyStyleHTML(String title, String body) {
+	StringBuilder htmlBuilder = new StringBuilder();
+	String appendedBody = TagBuilder.appendTag("body", body != null ? body : "");
+	String appendedTitle = TagBuilder.appendTag("title", title != null ? title : "");
+	String appendedStyle = TagBuilder.appendStylesheet("./css/styles.css");
+	String appendedHead = TagBuilder.appendTag("head", appendedTitle + appendedStyle);
+	String appendedHTML = TagBuilder.appendTag("html", appendedHead + appendedBody);
+	htmlBuilder.append(HTML5Doctype()).append(appendedHTML);
+	return htmlBuilder.toString();
+    }
+
+    public static String appendUL(String[] data) {
+	return TagBuilder.appendTag("ul", appendLIElements(data));
+    }
+
+    private static String appendLIElements(String[] liData) {
+	StringBuilder liBuilder = new StringBuilder();
+	for (int i = 0; i < liData.length; i++) {
+	    liBuilder.append(TagBuilder.appendTag("li", liData[i]));
 	}
-	
-	public static String titledHTML(String title) {
-		return titleAndBodyHTML(title, null);
+	return liBuilder.toString();
+    }
+
+    public static String appendTableWithHeader(String[][] data, String[] headerLabels) {
+	StringBuilder tableBuilder = new StringBuilder();
+	if (data[0].length == headerLabels.length) {
+	    StringBuilder colBuilder = new StringBuilder();
+	    StringBuilder rowBuilder = new StringBuilder();
+
+	    appendTH(headerLabels, colBuilder, rowBuilder);
+	    appendTableData(data, tableBuilder, rowBuilder);
 	}
 
-	public static String cleanHTML() {
-		return titleAndBodyHTML(null,null);
+	return tableBuilder.toString();
+    }
+
+    private static void appendTableData(String[][] data, StringBuilder tableBuilder, StringBuilder rowBuilder) {
+	StringBuilder colBuilder;
+	for (int i = 0; i < data.length; i++) {
+	    colBuilder = new StringBuilder();
+	    for (int j = 0; j < data[i].length; j++) {
+		appendTD(data, colBuilder, i, j);
+	    }
+	    appendTR(rowBuilder, colBuilder);
 	}
-	
-	public static String titleAndBodyHTML(String title, String body) {
-	    StringBuilder htmlBuilder = new StringBuilder();
-	    htmlBuilder.append(HTML5Doctype())
-		    	.append("<html>\n")
-			.append("\t<head>\n")
-			.append(title != null ? "\t\t<title>" + title + "</title>\n" : "")
-			.append("\t</head>\n")
-			.append("\t<body>\n")
-			.append(body != null ? body + "\n" : "")
-			.append("\t</body>\n")
-			.append("</html>");
-	    return htmlBuilder.toString();
+	tableBuilder.append(TagBuilder.appendTag("table", rowBuilder.toString()));
+    }
+
+    private static void appendTR(StringBuilder rowBuilder, StringBuilder colBuilder) {
+	rowBuilder.append(TagBuilder.appendTag("tr", colBuilder.toString()));
+    }
+
+    private static void appendTD(String[][] data, StringBuilder colBuilder, int i, int j) {
+	colBuilder.append(TagBuilder.appendTag("td", data[i][j]));
+    }
+
+    private static void appendTH(String[] headerLabels, StringBuilder colBuilder, StringBuilder rowBuilder) {
+	for (int i = 0; i < headerLabels.length; i++) {
+	    colBuilder.append(TagBuilder.appendTag("th", headerLabels[i]));
 	}
-	
-	private ResponseUtils() {
-	} // Uninstantiatable class
+	appendTR(rowBuilder, colBuilder);
+    }
+
+    private ResponseUtils() {
+    } // Uninstantiatable class
 }
