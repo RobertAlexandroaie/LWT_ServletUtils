@@ -1,5 +1,7 @@
 package lwt.lab.utils;
 
+import java.util.Map;
+
 /** Some simple time savers. Static methods. */
 
 public class ResponseUtils {
@@ -9,22 +11,26 @@ public class ResponseUtils {
     }
 
     public static String titledHTML(String title) {
-	return titleBodyStyleHTML(title, null);
+	return titleBodyStyleHTML(title, null, "./css/styles.css");
     }
 
     public static String cleanHTML() {
-	return titleBodyStyleHTML(null, null);
+	return titleBodyStyleHTML(null, null, "./css/styles.css");
     }
 
-    public static String titleBodyStyleHTML(String title, String body) {
+    public static String titleBodyStyleHTML(String title, String body, String cssPath) {
 	StringBuilder htmlBuilder = new StringBuilder();
 	String appendedBody = TagBuilder.appendTag("body", body != null ? body : "");
 	String appendedTitle = TagBuilder.appendTag("title", title != null ? title : "");
-	String appendedStyle = TagBuilder.appendStylesheet("./css/styles.css");
+	String appendedStyle = TagBuilder.appendStylesheet(cssPath);
 	String appendedHead = TagBuilder.appendTag("head", appendedTitle + appendedStyle);
 	String appendedHTML = TagBuilder.appendTag("html", appendedHead + appendedBody);
 	htmlBuilder.append(HTML5Doctype()).append(appendedHTML);
 	return htmlBuilder.toString();
+    }
+    
+    public static String titleBodyHTML(String title, String body) {
+	return titleBodyStyleHTML(title, body, "./css/styles.css");
     }
 
     public static String appendUL(String[] data) {
@@ -81,4 +87,12 @@ public class ResponseUtils {
 
     private ResponseUtils() {
     } // Uninstantiatable class
+
+    public static String appendP(String paragraph) {
+	return TagBuilder.appendTag("p", paragraph);
+    }
+
+    public static String appendA(String content, Map<String, String> attributes) {
+	return TagBuilder.appendTag("a", content);
+    }
 }
